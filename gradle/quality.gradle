@@ -1,0 +1,41 @@
+sonarqube {
+    properties {
+        property "sonar.exclusions", "**/*Generated.java"
+        property "sonar.java.spotbugs.reportPaths", "./build/reports/spotbugs/main.xml"
+        property "sonar.java.pmd.reportPaths", "./build/reports/pmd/pmdMain/report.xml"
+        property "sonar.java.checkstyle.reportPaths", "./build/reports/checkstyle/main.xml"
+        property "sonar.java.checkstyle.reportPaths", "./build/reports/checkstyle/test.xml"
+    }
+}
+
+spotbugs {
+    toolVersion = '4.2.3'
+    ignoreFailures = false
+    spotbugsTest.enabled = false
+    spotbugsMain.enabled = false
+}
+
+pmd {
+    consoleOutput = true
+    toolVersion = '6.47.0'
+    ignoreFailures = false
+    pmdTest.enabled = false
+}
+
+checkstyle {
+    toolVersion = '10.2'
+}
+
+
+tasks.withType(Pmd) {
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+}
+
+tasks.withType(Checkstyle) {
+    reports {
+        xml.required.set(true)
+    }
+}

@@ -1,0 +1,92 @@
+buildscript {
+	ext {
+		set('springVersion', '2.7.0')
+		set('googleJavaFormatVer', '0.9')
+		set('protobufVer', '3.19.4')
+
+		// quality code
+		sonarqubeVer = '3.0'
+		sonarlintVer = '1.0.162'
+		spotBugsVer = '5.0.6'
+		findSecBugsVer = '1.12.0'
+		pitestVer = '1.5.2'
+		pitestCliVer = '1.7.5'
+		pitestJUnit5Ver = '0.15'
+		googleJavaFormatVer = '0.9'
+		testLoggerVer = '3.2.0'
+		spawnPluginVersion = '0.8.2'
+		lombokVer = '1.18.22'
+		jsonSmartVer = '2.4.8'
+
+		// versioning
+		set('majorVer', '1')
+		set('minorVer', '0')
+		set('patchVer', '0')
+
+		recommendedThreads = Runtime.runtime.availableProcessors() * 2 ?: 1
+		if (recommendedThreads > 8) recommendedThreads = 8
+	}
+}
+
+plugins {
+	id 'org.springframework.boot' version "${springVersion}"
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+	id 'com.github.sherter.google-java-format' version "${googleJavaFormatVer}"
+	id 'org.sonarqube' version "${sonarqubeVer}"
+	id 'com.github.spotbugs' version "${spotBugsVer}"
+	id 'info.solidsoft.pitest' version "${pitestVer}"
+	id 'com.wiredforcode.spawn' version "${spawnPluginVersion}"
+	id 'jacoco'
+	id 'pmd'
+	id 'checkstyle'
+	id 'java-library'
+	id 'codenarc'
+}
+
+group = 'org.dario'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+googleJavaFormat {
+	toolVersion = '1.8'
+	options style: 'GOOGLE'
+}
+
+
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation("org.springframework.boot:spring-boot-starter-web:${springVersion}")
+	implementation("org.springframework.boot:spring-boot-starter-validation:${springVersion}")
+	implementation "com.google.protobuf:protobuf-java:${protobufVer}"
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// PIT Plugins
+	pitest("org.pitest:pitest-junit5-plugin:${pitestJUnit5Ver}")
+	pitest("org.pitest:pitest-command-line:${pitestCliVer}")
+
+
+}
+
+apply from: 'gradle/quality.gradle'
+apply from: 'gradle/tests.gradle'
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+processResources {
+	expand(project.properties)
+}

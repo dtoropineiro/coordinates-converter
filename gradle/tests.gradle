@@ -1,0 +1,61 @@
+apply plugin: 'info.solidsoft.pitest'
+apply plugin: 'jacoco'
+apply plugin: 'com.wiredforcode.spawn'
+
+
+test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+    maxParallelForks = "${recommendedThreads}" as int
+    forkEvery = 100
+}
+
+
+tasks.withType(Test) {
+    testLogging {
+        exceptionFormat "full"
+        events "passed", "failed", "skipped"
+    }
+}
+
+pitest {
+    pitestVersion = "${pitestVer}"
+    testPlugin = "junit5"
+    targetClasses = ['org.dario.*']
+    excludedClasses = [
+            'org.dario.coordinatesconverter.CoordinateConverterApplication*',
+            'org.dario.coordinatesconverter.exceptions*',
+            'org.dario.coordinatesconverter.domain*'
+
+    ]
+    threads = "${Math.round(Runtime.runtime.availableProcessors() / 2) ?: 1}" as int
+    outputFormats = ['XML', 'HTML']
+    mutationThreshold = 72
+    coverageThreshold = 73
+    reportDir = 'build/reports/mutation-tests-results' as File
+    timestampedReports = false
+    failWhenNoMutations = true
+    historyInputLocation = 'build/history.pitest'
+    historyOutputLocation = 'build/history.pitest'
+    verbose = false
+}
+
+jacoco {
+    toolVersion = "0.8.8"
+}
+
+jacocoTestReport {
+    reports {
+        xml.required.set(true)
+        html.required.set(false)
+        csv.required.set(false)
+    }
+}
+
+task startServer(type: SpawnProcessTask, dependsOn: 'assemble') {
+    command "./gradlew bootRun"
+    ready 'Started Application'
+}
+
+task stopServer(type: KillProcessTask)
+

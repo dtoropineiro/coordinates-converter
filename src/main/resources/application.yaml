@@ -1,0 +1,20 @@
+server:
+  max-http-header-size: 8KB
+  servlet:
+    context-path: /api/v${majorVer}
+
+map:
+  datum:
+    GRS80:
+      majorSemiAxis: 6378137
+      minorSemiAxis: 6356752.314140
+    NAD83:
+      majorSemiAxis: 6378137
+      minorSemiAxis: 6356752.31414
+    WGS84:
+      majorSemiAxis: 6378137
+      minorSemiAxis: 6356752.31424518
+    WGS72:
+      majorSemiAxis: 6378135
+      minorSemiAxis: 6356750.52002
+      #polarFlattening: 298.26
